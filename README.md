@@ -10,4 +10,4 @@ Pattern-based threat detection
 Risk scoring system
 Automated response generation
 Visual monitoring through an intuitive GUI
-This approach represents a significant advancement in cybersecurity by combining biological immune system principles with modern threat detection technologies6, making it particularly relevant in an era of increasingly sophisticated cyber threats.
+This approach represents a significant advancement in cybersecurity by combining biological immune system principles with modern threat detection technologies, making it particularly relevant in an era of increasingly sophisticated cyber threats.
