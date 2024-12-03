@@ -1,0 +1,5 @@
+{
+    "model_name": "distilbert-base-uncased",
+    "feature_extractor_name": "distilbert-base-uncased"
+}
+
