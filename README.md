@@ -1,5 +1,5 @@
 # Sentient-Network-Immunology-Tool (SNIT)
-
+Experiemnt created through vibe coding:
 #The Sentient-Network-Immunology-Tool Mimics biological immune system resilience and adaptability for cybersecurity
 Can identify and adapt to new/unknown threats, particularly crucial for zero-day attacks
 Provides autonomous operation capability, essential for large-scale network environments
