@@ -1,3 +1,6 @@
+<img width="1823" height="1033" alt="image" src="https://github.com/user-attachments/assets/4382bc74-1bf7-4be8-9cd6-082f33cc1a52" />
+
+
 # SNIT is like a super-smart, biological security guard who learns and adapts. It’s modeled after the human immune system. It doesn't just follow a static rulebook; it gets better at its job every single day.
 
 # What Makes It Special?

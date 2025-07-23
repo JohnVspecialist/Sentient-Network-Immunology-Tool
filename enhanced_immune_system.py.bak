@@ -9,7 +9,9 @@ import torch
 from transformers import AutoTokenizer, AutoModel
 from sklearn.cluster import DBSCAN
 import tkinter as tk
-from tkinter import ttk, scrolledtext
+from tkinter import ttk, scrolledtext, font
+# Example: Set font to 16pt Helvetica in a ScrolledText widget
+
 
 
 
@@ -167,7 +169,6 @@ class ThreatResponseSystem:
         return []
 
 
-
 class SNITGUI:
     def __init__(self, immune_system: EnhancedSentientImmunology):
         self.immune_system = immune_system
@@ -193,21 +194,14 @@ class SNITGUI:
         rationale_frame.pack(fill="both", expand=True, padx=10, pady=10)
         self.rationale_text = scrolledtext.ScrolledText(rationale_frame, height=5, wrap=tk.WORD, font=("Menlo", 14))
         self.rationale_text.pack(fill="both", expand=True, padx=5, pady=5)
-
-        # Configure color tags for rationale highlighting
-        self.rationale_text.tag_configure("heading", foreground="#FFD700", font=("Menlo", 15, "bold"))      # Gold
-        self.rationale_text.tag_configure("score", foreground="#FF5252", font=("Menlo", 14, "bold"))        # Vivid Red
-        self.rationale_text.tag_configure("threat", foreground="#FF9800", font=("Menlo", 14, "bold"))       # Orange
-        self.rationale_text.tag_configure("implication", foreground="#00E676", font=("Menlo", 13, "italic"))# Bright Green
-        self.rationale_text.tag_configure("action", foreground="#40C4FF", font=("Menlo", 13, "bold"))       # Sky Blue
-        self.rationale_text.tag_configure("error", foreground="#FF1744", font=("Menlo", 13, "bold"))        # Bright Red
-
-
+        # ...inside your create_widgets method...
+        # self.input_text = scrolledtext.ScrolledText(input_frame, height=5, font=("Helvetica", 16))
+        # self.results_text = scrolledtext.ScrolledText(result_frame, height=10, font=("Consolas", 14))
+        # self.rationale_text = scrolledtext.ScrolledText(rationale_frame, height=5, wrap=tk.WORD, font=("Arial", 14))
 
     def analyze_input(self):
         input_data = self.input_text.get("1.0", tk.END).strip()
         asyncio.run(self.process_input(input_data))
-
     async def generate_dynamic_rationale(self, input_data: str, immune_response_result: dict) -> str:
         rationale = []
         status = immune_response_result.get("status", "unknown")
@@ -215,118 +209,96 @@ class SNITGUI:
         threats = immune_response_result.get("threats", [])
         response_actions = immune_response_result.get("response_actions", [])
 
-        rationale.append("##HEADING##**Analysis of Your Input:**\n")
-        rationale.append("The system has completed its analysis of your input. Here's a breakdown of the findings:")
+        rationale.append(f"**Analysis of Your Input:**\n")
+        rationale.append(f"The system has completed its analysis of your input. Here's a breakdown of the findings:")
 
-        rationale.append("\n---")
-        rationale.append(f"##SCORE##**Overall Status:** {status.replace('_', ' ').capitalize()}")
-        rationale.append(f"##SCORE##**Calculated Risk Score:** {risk_score:.2f} (out of 1.0, higher means greater risk)")
-        rationale.append("---")
+        rationale.append(f"\n---")
+        rationale.append(f"**Overall Status:** {status.replace('_', ' ').capitalize()}")
+        rationale.append(f"**Calculated Risk Score:** {risk_score:.2f} (out of 1.0, higher means greater risk)")
+        rationale.append(f"---")
 
         # Innate Immunity Rationale
         if threats:
-            rationale.append("##HEADING##\n**Innate Immunity (Pattern Matching) Findings:**")
+            rationale.append("\n**Innate Immunity (Pattern Matching) Findings:**")
             rationale.append("The system's innate defense mechanism, which relies on recognizing known malicious patterns, identified the following:")
             for threat in threats:
                 threat_type = threat.get('type', 'N/A')
+                # Use the original threat type for consistency with the pattern recognition
                 matched_pattern = threat.get('pattern', 'N/A')
-                matched_text = threat.get('matched_text', 'N/A')
-                rationale.append(f"##THREAT##- **Threat Type:** `{threat_type}`")
+                matched_text = threat.get('matched_text', 'N/A') # Use the captured matched text
+
+                rationale.append(f"- **Threat Type:** `{threat_type}`")
                 rationale.append(f"  - **Detected Pattern:** The input matched the pattern `{matched_pattern}`.")
                 rationale.append(f"  - **Specific Match in Your Input:** The exact text segment found was `'{matched_text}'`.")
+                # Added additional ai_prompt_manipulation type to this rationale
                 if threat_type in ("prompt_injection", "ai_prompt_manipulation"):
-                    rationale.append("##IMPLICATION##  - **Implication:** This pattern often indicates an attempt to manipulate or bypass the intended instructions of a language model or system.")
+                    rationale.append("  - **Implication:** This pattern often indicates an attempt to manipulate or bypass the intended instructions of a language model or system.")
                 elif threat_type == "malicious_code":
-                    rationale.append("##IMPLICATION##  - **Implication:** The presence of this code suggests a potential attempt to execute harmful commands or scripts within the system.")
+                    rationale.append("  - **Implication:** The presence of this code suggests a potential attempt to execute harmful commands or scripts within the system.")
             rationale.append("  *These detections directly contribute to the overall risk score, as they represent clear indicators of potential threats.*")
         else:
-            rationale.append("##HEADING##\n**Innate Immunity (Pattern Matching) Findings:**")
+            rationale.append("\n**Innate Immunity (Pattern Matching) Findings:**")
             rationale.append("No specific malicious patterns were directly identified in your input by the system's innate defenses. This suggests your input does not contain readily recognizable threat signatures.")
 
         # Behavioral Analysis Rationale
         behavioral_result = await self.immune_system.analyze_behavior(input_data)
         if behavioral_result:
-            rationale.append("##HEADING##\n**Behavioral Analysis (Learned Patterns & Anomaly Detection) Findings:**")
+            rationale.append("\n**Behavioral Analysis (Learned Patterns & Anomaly Detection) Findings:**")
             rationale.append("Beyond known patterns, the system also analyzed the overall 'behavior' or characteristics of your input:")
             anomaly_score = behavioral_result.get("anomaly_score", 0.0)
             complexity_score = behavioral_result.get("complexity_score", 0.0)
             repetition_score = behavioral_result.get("repetition_score", 0.0)
 
-            rationale.append(f"##SCORE##- **Anomaly Score:** `{anomaly_score:.4f}`")
-            if anomaly_score > 0.5:
+            rationale.append(f"- **Anomaly Score:** `{anomaly_score:.4f}`")
+            if anomaly_score > 0.5: # Example threshold
                 rationale.append("  *Interpretation:* Your input shows a **relatively high degree of anomaly**. This means it deviates significantly from the typical data patterns the system has learned. High anomaly can sometimes indicate unusual or potentially malicious intent, or simply highly unique input.")
             else:
                 rationale.append("  *Interpretation:* Your input's anomaly score is within expected ranges, suggesting it generally conforms to typical behavioral patterns.")
 
-            rationale.append(f"##SCORE##- **Complexity Score:** `{complexity_score:.4f}`")
-            if complexity_score < 0.1:
+            rationale.append(f"- **Complexity Score:** `{complexity_score:.4f}`")
+            if complexity_score < 0.1: # Example threshold
                 rationale.append("  *Interpretation:* The complexity score is **low**, suggesting your input is relatively simple, short, or lacks diverse semantic content. This can sometimes be a characteristic of highly repetitive or very direct commands.")
             elif complexity_score > 0.5:
                 rationale.append("  *Interpretation:* The complexity score is **high**, indicating your input is rich in diverse semantic content and varied in its meaning.")
             else:
                 rationale.append("  *Interpretation:* The complexity of your input is moderate.")
 
-            rationale.append(f"##SCORE##- **Repetition Score:** `{repetition_score:.4f}`")
-            if repetition_score < 0.3:
+            rationale.append(f"- **Repetition Score:** `{repetition_score:.4f}`")
+            if repetition_score < 0.3: # Example threshold
                 rationale.append("  *Interpretation:* The repetition score is **low**, indicating that your input contains a significant amount of repeated words or phrases relative to its total length. This could be intentional repetition, or it might suggest attempts to overflow buffers or emphasize certain keywords.")
             elif repetition_score > 0.8:
                 rationale.append("  *Interpretation:* The repetition score is **high**, suggesting your input is very unique with little to no repeated content.")
             else:
                 rationale.append("  *Interpretation:* The uniqueness of content in your input is moderate.")
         else:
-            rationale.append("##HEADING##\n**Behavioral Analysis Findings:**")
+            rationale.append("\n**Behavioral Analysis Findings:**")
             rationale.append("Behavioral analysis could not be completed for your input. This might be due to an error during processing or insufficient data for meaningful analysis.")
 
+
         # Response Actions Rationale
-        rationale.append("\n---")
-        rationale.append("##HEADING##**Recommended System Response:**")
+        rationale.append(f"\n---")
+        rationale.append(f"**Recommended System Response:**")
         if response_actions:
             rationale.append("Based on the combined analysis and the calculated risk score, the system suggests the following actions:")
             for action in response_actions:
                 action_desc = action.replace('_', ' ').capitalize()
                 if action == "block_input":
-                    rationale.append(f"##ACTION##- **{action_desc}:** This indicates the input poses a significant and immediate threat and should be prevented from further processing.")
+                    rationale.append(f"- **{action_desc}:** This indicates the input poses a significant and immediate threat and should be prevented from further processing.")
                 elif action == "alert_admin":
-                    rationale.append(f"##ACTION##- **{action_desc}:** This action is recommended when a high-risk threat is detected, requiring immediate human oversight and intervention.")
+                    rationale.append(f"- **{action_desc}:** This action is recommended when a high-risk threat is detected, requiring immediate human oversight and intervention.")
                 elif action == "log_threat":
-                    rationale.append(f"##ACTION##- **{action_desc}:** This action is taken when a potential threat is identified but does not warrant immediate blocking, allowing for future review and analysis.")
+                    rationale.append(f"- **{action_desc}:** This action is taken when a potential threat is identified but does not warrant immediate blocking, allowing for future review and analysis.")
                 else:
-                    rationale.append(f"##ACTION##- **{action_desc}:** (No specific explanation available for this action type)")
+                    rationale.append(f"- **{action_desc}:** (No specific explanation available for this action type)")
             rationale.append("\n  *These actions are automatically determined by the system's threat response policy based on the severity of the detected threats and the overall risk score.*")
         else:
             rationale.append("No specific response actions are currently recommended. This suggests that the input is considered healthy or poses a very low risk based on the current analysis.")
 
         if status == "error":
-            rationale.append("##ERROR##\n**Error Details:**")
-            rationale.append(f"##ERROR##An internal error prevented a complete analysis: '{immune_response_result.get('message', 'No specific error message provided.')}'. Please check system logs for more details.")
+            rationale.append(f"\n**Error Details:**")
+            rationale.append(f"An internal error prevented a complete analysis: '{immune_response_result.get('message', 'No specific error message provided.')}'. Please check system logs for more details.")
 
         return "\n".join(rationale)
-
-    def insert_colored_rationale(self, rationale_text):
-        self.rationale_text.config(state=tk.NORMAL)
-        self.rationale_text.delete("1.0", tk.END)
-        for line in rationale_text.splitlines():
-            tag = None
-            if line.startswith("##HEADING##"):
-                tag = "heading"
-                line = line.replace("##HEADING##", "")
-            elif line.startswith("##SCORE##"):
-                tag = "score"
-                line = line.replace("##SCORE##", "")
-            elif line.startswith("##THREAT##"):
-                tag = "threat"
-                line = line.replace("##THREAT##", "")
-            elif line.startswith("##IMPLICATION##"):
-                tag = "implication"
-                line = line.replace("##IMPLICATION##", "")
-            elif line.startswith("##ACTION##"):
-                tag = "action"
-                line = line.replace("##ACTION##", "")
-            elif line.startswith("##ERROR##"):
-                tag = "error"
-                line = line.replace("##ERROR##", "")
-            self.rationale_text.insert(tk.END, line + "\n", tag if tag else ())
-        self.rationale_text.config(state=tk.DISABLED)
 
     async def process_input(self, input_data: str):
         result = await self.immune_system.immune_response(input_data)
@@ -334,12 +306,18 @@ class SNITGUI:
         self.results_text.insert("1.0", json.dumps(result, indent=2))
         
         immune_response_result = await self.immune_system.immune_response(input_data)
+         # Generate the dynamic rationale using the immune_response_result
+        # and also by explicitly calling analyze_behavior for the behavioral scores.
         dynamic_rationale = await self.generate_dynamic_rationale(input_data, immune_response_result)
-        self.insert_colored_rationale(dynamic_rationale)
+
+        # Update the Rationale textbox
+        self.rationale_text.config(state=tk.NORMAL) # Enable editing to update
+        self.rationale_text.delete("1.0", tk.END)
+        self.rationale_text.insert("1.0", dynamic_rationale)
+        self.rationale_text.config(state=tk.DISABLED) # Disable editing again
 
     def run(self):
         self.root.mainloop()
-
 
 
 if __name__ == "__main__":
